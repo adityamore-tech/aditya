@@ -1,129 +1,226 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import pyttsx3 as p
+import wikipedia
+import datetime
+import pyaudio
+import speech_recognition as sr
+import webbrowser
+import os
+import dictionary
+import pyautogui
 
-# C extensions
-*.so
+engine = p.init('sapi5')
+voices = engine.getProperty('voices')
+#print(voices[0].id)
+engine.setProperty('voice',voices[0].id)
+engine.setProperty('volume',50)
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Good Morning!")
+    elif hour>12 and hour<18:
+        speak("Good Afternoon!")
+    else:
+        speak("Good Evening!")
+    #speak("Hi sir, I am Jarvis an artificial intelligence, please tell me how may I help u?")
+    #speak("Ganpati Bappa Morya, Jay Shree Ram")
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+#query = r.recognize_google(audio, language='en-in')
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
+def takeCommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 1
+        r.energy_threshold =600 
+        audio = r.listen(source)
+    try:
+        print('Recognizing...')
+        query = r.recognize_google(audio, language="en-in")
+        print(f"User said: {query}\n")
+        #print("Recognizing...")
+        #query = r.recognize_google(audio, language='en-in')
+        #print(f"User said: {query}\n")
+    
+    #except sr.RequestError as e: 
+        #print("Could not request results; {0}".format(e)) 
+          
+    #except sr.UnknownValueError: 
+        #print("unknown error occured") 
 
-# Translations
-*.mo
-*.pot
+    except Exception as e:
+        print(e)
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+        print("Say that again")
+        return "None"
 
-# Flask stuff:
-instance/
-.webassets-cache
+    return query
 
-# Scrapy stuff:
-.scrapy
+    #except sr.RequestError as e: 
+       # print("Could not request results; {0}".format(e)) 
+          
+    #except sr.UnknownValueError: 
+      #  print("unknown error occured") 
 
-# Sphinx documentation
-docs/_build/
+    #return query
 
-# PyBuilder
-target/
+#def hit(key):
+   # pyautogui.press(key)
 
-# Jupyter Notebook
-.ipynb_checkpoints
 
-# IPython
-profile_default/
-ipython_config.py
+#def talktoMe():
+ #   if 
 
-# pyenv
-.python-version
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+        
+if __name__ == "__main__":
+    wishMe()
+    takeCommand()
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
+while True:
+    query = takeCommand().lower()
+      
+    if 'wikipedia' in query:
+        speak("Searching in wikipedia.....Please wait for a while")
+        query = query.replace("wikipedia","")
+        results = wikipedia.summary(query, sentences=2)
+        speak("According to Wikipedia")
+        print(results)
+        speak(results)
+        
+    #elif 'open youtube' in query:
+    #    webbrowser.open("youtube.com")
+     #   speak("Here you go sir.")
+    
+    elif 'open google' in query:
+        webbrowser.open("google.com")
+        speak("Here you go sir.")
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+    elif "what's the time" in query:
+        strTime = datetime.datetime.now().strftime("H%:M%:S%")
+        speak(f"Sir, the time is {strTime}")
 
-# SageMath parsed files
-*.sage.py
+    elif 'hello jarvis' in query:
+        speak("hi sir, how are u doing,how was your day?")
+        while True:
+            query = takeCommand().lower()
+            if 'good' in query:
+                speak("same here,what can i do for you?")
+            elif 'bad day' in query:
+                speak("what happen sir?")
+            elif 'i am bored' in query:
+                speak("so,what can i do for you?")
+                while True:
+                    query = takeCommand().lower()
+                    if 'live it jarvis' in query:
+                        speak("ok sir, may i help you to make your day better?")
+                        while True:
+                            query = takeCommand().lower()
+                            if 'yes' in query:
+                                webbrowser.open("youtube.com")
+                                speak("sir,do you want to see any funny videos")
+                            elif 'no' in query:
+                                speak("what can i do for u sir?")
+                            else:break        
+                    else:break
+            else:break    
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+    elif 'play music for me' in query:
+        speak("which kind of music would you like to hear")
+        pyautogui.moveTo()
+        while True:
+            query = takeCommand().lower()
+            if 'i want to chill, play accordingly' in query:
+                speak("ok ,just a second")
+            elif 'i want to dance' in query:
+                speak("ok ,just a second")
+            else:break
+    elif 'gg boy' in query:
+        speak("thanks sir")
+        while True:
+            query = takeCommand().lower()
+            if 'thanks man' in query:
+                speak("")
+            else:
+                break            
+               
+    elif 'increase volume' in query:
+        speak("ok sir")
+        pyautogui.press('F3', interval=0.01)
+   
+    elif 'decrease volume' in query:
+        speak("ok sir")
+        pyautogui.press('F2', interval=0.01)
 
-# Spyder project settings
-.spyderproject
-.spyproject
+    elif 'mute' in query:
+        speak("ok sir")
+        pyautogui.press('m', interval=0.01)
+    #elif 'unmute' in query:
+        
+    elif 'close windows' in query:
+        speak("ok sir")
+        pyautogui.moveTo(1900, 0)
+        pyautogui.click(button='left', interval=0.01)
+   
+    elif 'minimise the tab' in query:
+        speak("ok sir")      
+        pyautogui.moveTo(1750, 0)
+        pyautogui.click(button='left', interval=0.01)
+    
+    elif 'play video' in query:
+        speak("ok sir")
+        pyautogui.press('space', interval=0.01)
+    elif'pause video' in query:
+        speak("ok sir")
+        pyautogui.press('space',interval=0.01)
+    
+    elif 'increase computers volume' in query:
+        speak("ok sir")
+        pyautogui.press('volumeup',interval=0.01)
 
-# Rope project settings
-.ropeproject
+    elif 'decrease computers volume' in query:
+        speak("ok sir")
+        pyautogui.press('volumedown',interval=0.01)
+    
+    elif 'open chrome' in query:
+        speak("ok sir")
+        pyautogui.moveTo(750, 1079)
+        pyautogui.click(button='left',interval=0.01)
+    
+    elif 'search' in query:
+        speak("what should i search")
+        pyautogui.moveTo(750, 650)
+        pyautogui.click(button='left',interval=0.01)
+      #  pyautogui:pyautogui.type(query)
 
-# mkdocs documentation
-/site
+    elif 'open folder' in query:
+        speak("ok sir")
+        pyautogui.moveTo(950, 1079)
+        pyautogui.click(button='left',interval=0.45)
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+        
+    elif 'close chrome' in query:
+        speak("ok sir")
+        pyautogui.moveTo(750, 1079)
+        pyautogui.click(button='right',interval=0.25)
+        pyautogui.moveTo(750, 999)
+        pyautogui.click(button='left',interval=0.25)
 
-# Pyre type checker
-.pyre/
+    elif 'open youtube' in query:
+        speak("here you go")
+        pyautogui.moveTo(750, 1079)
+        pyautogui.click(button='left',interval=0.45)
+        pyautogui.moveTo(260, 140)
+        pyautogui.click(button='left',interval=0.45)    
+    
+    elif 'who made you' in query:
+        speak("i was been programmed by Aditya Moray")
+        while True:
+            query = takeCommand().lower()
+            if 'who is he' in query:
+                speak("i don't know much about him")
+            else:break
